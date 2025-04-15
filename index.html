@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Click Counter</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+    // Your Firebase config (from the new project "clicker-8e69e")
+    const firebaseConfig = {
+      apiKey: "AIzaSyD6cHycqwTutp-HvnQs8obC2XwF7_-oBa8",
+      authDomain: "clicker-8e69e.firebaseapp.com",
+      projectId: "clicker-8e69e",
+      storageBucket: "clicker-8e69e.appspot.com",
+      messagingSenderId: "1007920072443",
+      appId: "1:1007920072443:web:271ee4ae944afe7087125e",
+      measurementId: "G-3477L13FVM"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const counterRef = ref(db, "clickCounter");
+
+    // Update count on page load
+    window.addEventListener("load", () => {
+      get(counterRef).then((snapshot) => {
+        const count = snapshot.exists() ? snapshot.val() : 0;
+        document.getElementById("counter").innerText = count;
+      });
+    });
+
+    // Increment on click
+    window.incrementCounter = function () {
+      get(counterRef).then((snapshot) => {
+        const current = snapshot.exists() ? snapshot.val() : 0;
+        const updated = current + 1;
+        set(counterRef, updated).then(() => {
+          document.getElementById("counter").innerText = updated;
+        });
+      });
+    };
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #333;
+    }
+
+    p {
+      font-size: 1.2rem;
+    }
+
+    button {
+      font-size: 1.5rem;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Click Counter</h1>
+  <p>Click count: <span id="counter">0</span></p>
+  <button onclick="incrementCounter()">Click me</button>
+</body>
+</html>
