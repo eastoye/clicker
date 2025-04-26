@@ -1,75 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Click Counter</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-    // Your Firebase config (from the new project "clicker-8e69e")
+  <!-- Main script -->
+  <script type="module">
+    /* ─── Firebase imports ─────────────────────────────── */
+    import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getDatabase,
+             ref,
+             get,
+             set }            from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+    /* ─── Your project’s config ────────────────────────── */
     const firebaseConfig = {
-      apiKey: "AIzaSyD6cHycqwTutp-HvnQs8obC2XwF7_-oBa8",
-      authDomain: "clicker-8e69e.firebaseapp.com",
-      projectId: "clicker-8e69e",
-      storageBucket: "clicker-8e69e.appspot.com",
+      apiKey:            "AIzaSyD6cHycqwTutp-HvnQs8obC2XwF7_-oBa8",
+      authDomain:        "clicker-8e69e.firebaseapp.com",
+      projectId:         "clicker-8e69e",
+      storageBucket:     "clicker-8e69e.appspot.com",
       messagingSenderId: "1007920072443",
-      appId: "1:1007920072443:web:271ee4ae944afe7087125e",
-      measurementId: "G-3477L13FVM"
+      appId:             "1:1007920072443:web:271ee4ae944afe7087125e",
+      measurementId:     "G-3477L13FVM",
+      databaseURL:       "https://clicker-8e69e-default-rtdb.europe-west1.firebasedatabase.app"
     };
 
+    /* ─── Initialise Firebase & point at correct DB ────── */
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db  = getDatabase(
+      app,
+      "https://clicker-8e69e-default-rtdb.europe-west1.firebasedatabase.app"
+    );
     const counterRef = ref(db, "clickCounter");
 
-    // Update count on page load
+    /* ─── Show current count on load ───────────────────── */
     window.addEventListener("load", () => {
-      get(counterRef).then((snapshot) => {
-        const count = snapshot.exists() ? snapshot.val() : 0;
+      get(counterRef).then(snap => {
+        const count = snap.exists() ? snap.val() : 0;
         document.getElementById("counter").innerText = count;
-      });
+      }).catch(err => console.error("Read failed:", err));
     });
 
-    // Increment on click
-    window.incrementCounter = function () {
-      get(counterRef).then((snapshot) => {
-        const current = snapshot.exists() ? snapshot.val() : 0;
-        const updated = current + 1;
-        set(counterRef, updated).then(() => {
-          document.getElementById("counter").innerText = updated;
+    /* ─── Increment when the button is clicked ─────────── */
+    window.incrementCounter = () => {
+      get(counterRef).then(snap => {
+        const next = (snap.exists() ? snap.val() : 0) + 1;
+        return set(counterRef, next).then(() => {
+          document.getElementById("counter").innerText = next;
         });
-      });
+      }).catch(err => console.error("Write failed:", err));
     };
   </script>
 
   <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-family: sans-serif;
-      background-color: #f4f4f4;
-    }
-
-    h1 {
-      font-size: 2rem;
-      color: #333;
-    }
-
-    p {
-      font-size: 1.2rem;
-    }
-
-    button {
-      font-size: 1.5rem;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
+    body  { margin:0; height:100vh; display:flex;
+            flex-direction:column; align-items:center; justify-content:center;
+            font-family:sans-serif; background:#f4f4f4; }
+    h1    { margin:0 0 .5rem; font-size:2rem; color:#333; }
+    p     { margin:.25rem 0 1rem; font-size:1.2rem; }
+    button{ font-size:1.5rem; padding:10px 20px; cursor:pointer; }
   </style>
 </head>
+
 <body>
   <h1>Click Counter</h1>
   <p>Click count: <span id="counter">0</span></p>
